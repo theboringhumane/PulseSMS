@@ -1,4 +1,4 @@
-# 🌟 Automated Google Messages API: Seamlessly Send & Manage Messages at Scale 🚀
+# PulseSMS ⚡ - Google Messages API: Seamlessly Send & Manage Messages at Scale 🚀 
 
 A FastAPI-based service that enables programmatic interaction with Google Messages Web, allowing automated message sending and management through a REST API and WebSocket interface.
 
