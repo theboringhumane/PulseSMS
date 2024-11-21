@@ -1,0 +1,7 @@
+POST http://localhost:8000/api/messages/send
+Content-Type: application/json
+
+{
+  "to": "+918171092797",
+  "body": "Hello, this is a test message from the FastAPI application."
+}

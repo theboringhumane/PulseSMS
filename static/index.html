@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Messages Authentication</title>
+    <style>
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        #qr-code {
+            max-width: 300px;
+            margin: 20px;
+        }
+        .status {
+            margin: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <div class="qr-container">
+        <h1>Scan QR Code</h1>
+        <img id="qr-code" />
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const ws = new WebSocket(`ws://localhost:8000/ws/auth`);
+        const qrCode = document.getElementById('qr-code');
+        const status = document.getElementById('status');
+
+        // Keep alive ping every 30 seconds
+        const keepAlive = () => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'ping' }));
+            }
+        };
+        setInterval(keepAlive, 30000);
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+
+            switch(data.type) {
+                case 'qr-code':
+                    qrCode.src = data.data;
+                    break;
+                case 'authenticated':
+                    status.innerHTML = `<div class="status success">${data.data}</div>`;
+                    setTimeout(() => window.close(), 3000);
+                    break;
+                case 'error':
+                    status.innerHTML = `<div class="status error">${data.data}</div>`;
+                    break;
+                case 'pong':
+                    console.log('File: index.html 🔄 Line: 40, Function: onmessage; Received pong from server');
+                    break;
+            }
+        };
+
+        ws.onerror = function(error) {
+            status.innerHTML = `<div class="status error">WebSocket Error: ${JSON.stringify(error)}</div>`;
+        };
+    </script>
+</body>
+</html>
