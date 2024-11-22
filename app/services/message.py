@@ -42,10 +42,11 @@ class MessageService:
             WebDriverWait(self.driver, 10).until(
                 EC.invisibility_of_element_located((By.ID, "loader"))
             )
+
             logger.info("File: message.py 📱 Line: 45, Function: send_message; Loader disappeared")
 
             # print current url
-            logger.info(f"File: message.py 📱 Line: 48, Function: send_message; Current URL={self.driver.current_url}")
+            logger.info(f"File: message.py 📱 Line: 48, Function: send_message; Current URL={self.driver.execute_script('return window.location.href;')}")
 
             selector_btn = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, XPathSelectors.CONTACT_SELECTOR_BTN))

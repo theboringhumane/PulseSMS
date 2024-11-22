@@ -22,8 +22,8 @@ services:
     environment:
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444
-      - HEADLESS=true
-      - DEBUG=false
+      - HEADLESS=false
+      - DEBUG=true
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     ports:
