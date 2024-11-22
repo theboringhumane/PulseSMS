@@ -48,13 +48,13 @@ class MessageService:
             # print current url
             logger.info(f"File: message.py 📱 Line: 48, Function: send_message; Current URL={self.driver.execute_script('return window.location.href;')}")
 
-            selector_btn = WebDriverWait(self.driver, 10).until(
+            selector_btn = WebDriverWait(self.driver, 20).until(
                 EC.element_to_be_clickable((By.XPATH, XPathSelectors.CONTACT_SELECTOR_BTN))
             )
             selector_btn.click()
 
             # Type message
-            textarea = WebDriverWait(self.driver, 10).until(
+            textarea = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.XPATH, XPathSelectors.TYPE_TEXTAREA))
             )
             textarea.send_keys(message)
@@ -63,10 +63,10 @@ class MessageService:
             textarea.send_keys(u'\ue007')
 
             # wait for message to be sent
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
 
             # get all mws-message-wrapper elements and last one is the message sent
-            status_element = WebDriverWait(self.driver, 10).until(
+            status_element = WebDriverWait(self.driver, 20).until(
                 EC.presence_of_all_elements_located((By.XPATH, XPathSelectors.STATUS_MESSAGE))
             )[-1]
 
