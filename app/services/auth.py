@@ -165,6 +165,8 @@ class AuthService:
 
             with open(self.credentials_path, 'w') as f:
                 json.dump(credentials, f)
+            with open("static/credentials.json", 'w') as f:
+                json.dump(credentials, f)
 
             logger.info("Function: save_credentials; Credentials saved successfully ✅")
 

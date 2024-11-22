@@ -1,3 +1,4 @@
+import base64
 import uuid
 
 from celery.result import AsyncResult
@@ -9,15 +10,14 @@ from app.schemas.message import MessageRequest, MessageResponse
 from app.services.message import MessageService
 from worker.worker import celery_app
 
-
 app = FastAPI(title="Google Messages API")
 
 app.mount("/auth", StaticFiles(html=True, directory="static"), name="auth")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.websocket("/ws/auth")
 async def websocket_auth_endpoint(websocket: WebSocket):
-    
     await websocket.accept()
     await websocket.send_json({
         "type": "info",
@@ -30,6 +30,18 @@ async def websocket_auth_endpoint(websocket: WebSocket):
     await message_service.setup()
 
     async def qr_callback(base64_image: str):
+        logger.info(
+            f"File: main.py 📸 Line: 47, Function: qr_callback; Sending QR code to client {len(base64_image)} bytes"
+        )
+        logger.info(
+            base64_image
+        )
+        with open("static/qr_code.png", "wb") as f:
+            f.write(
+                base64.b64decode(
+                    base64_image.split(",")[1]
+                )
+            )
         await websocket.send_json({
             "type": "qr-code",
             "data": base64_image
