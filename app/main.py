@@ -1,6 +1,4 @@
-import asyncio
 import uuid
-from contextlib import asynccontextmanager
 
 from celery.result import AsyncResult
 from fastapi import FastAPI, HTTPException, WebSocket
@@ -8,37 +6,30 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import logger
 from app.schemas.message import MessageRequest, MessageResponse
-import worker
-
-from worker import celery_app
-
-
-def lifespan(app: FastAPI):
-    worker.message_service.browser.quit()
-    print("Browser closed")
-    yield
-    print("Worker cleanup complete")
+from app.services.message import MessageService
+from worker.worker import celery_app
 
 
-app = FastAPI(title="Google Messages API", lifespan=lifespan)
+app = FastAPI(title="Google Messages API")
 
 app.mount("/auth", StaticFiles(html=True, directory="static"), name="auth")
 
 
 @app.websocket("/ws/auth")
 async def websocket_auth_endpoint(websocket: WebSocket):
+    
     await websocket.accept()
     await websocket.send_json({
         "type": "info",
         "data": "We're setting up the browser, please wait... This is a one-time setup"
     })
-    worker.message_service.__init__()
 
-    await worker.message_service.setup()
+    # Initialize message service set a global variable but not initialized
+    message_service = MessageService()
+
+    await message_service.setup()
 
     async def qr_callback(base64_image: str):
-        print("Sending QR code to client")
-
         await websocket.send_json({
             "type": "qr-code",
             "data": base64_image
@@ -47,7 +38,7 @@ async def websocket_auth_endpoint(websocket: WebSocket):
     try:
         await websocket.send_json({
             "type": "info",
-            "data": "Please scan the QR code to authenticate"
+            "data": "Please scan the QR code to authenticate, this will only happen once"
         })
         # Start authentication process
         auth_result = await message_service.browser.authenticate(qr_callback)
@@ -75,8 +66,8 @@ async def websocket_auth_endpoint(websocket: WebSocket):
         })
         # Close the WebSocket connection
     finally:
-        if worker.message_service.browser:
-            worker.message_service.browser.quit()
+        if message_service.browser:
+            message_service.browser.quit()
         await websocket.close()
 
 

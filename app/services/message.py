@@ -4,9 +4,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from app.config import settings, logger
-from app.services.browser import BrowserService
-from app.utils.selectors import XPathSelectors
+from ..config import settings, logger
+from ..services.browser import BrowserService
+from ..utils.selectors import XPathSelectors
 
 
 class MessageService:

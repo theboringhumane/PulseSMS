@@ -1,8 +1,10 @@
+from typing import Optional, Callable
+
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from app.config import settings, logger
-from app.services.auth import AuthService
-from typing import Optional, Callable, Coroutine, Any
+
+from ..config import settings, logger
+from ..services.auth import AuthService
 
 
 class BrowserService:
@@ -18,6 +20,9 @@ class BrowserService:
 
         if settings.headless:
             firefox_options.add_argument("--headless")
+        
+        firefox_options.add_argument("--disable-gpu")
+        firefox_options.add_argument("--disable-dev-shm-usage")
 
         self.driver = webdriver.Remote(
             command_executor=f"http://{settings.selenium_host}:{settings.selenium_port}/wd/hub",

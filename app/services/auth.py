@@ -3,8 +3,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from app.config import settings, logger
-from app.utils.selectors import XPathSelectors
+from ..config import settings, logger
+from ..utils.selectors import XPathSelectors
 import json
 import os
 from typing import Optional, Callable, Any, Coroutine

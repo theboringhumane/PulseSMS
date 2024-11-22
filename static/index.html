@@ -54,6 +54,9 @@
                     status.innerHTML = `<div class="status success">${data.data}</div>`;
                     setTimeout(() => window.close(), 3000);
                     break;
+                case 'info':
+                    status.innerHTML = `<div class="status info">${data.data}</div>`;
+                    break;
                 case 'error':
                     status.innerHTML = `<div class="status error">${data.data}</div>`;
                     break;
