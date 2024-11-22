@@ -3,6 +3,13 @@
 <head>
     <title>Google Messages Authentication</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: black;
+            background-color: #f8f9fa;
+        }
         .qr-container {
             display: flex;
             flex-direction: column;
@@ -26,7 +33,7 @@
 <body>
     <div class="qr-container">
         <h1>Scan QR Code</h1>
-        <img id="qr-code" />
+        <img id="qr-code" alt="QR Code"/>
         <div id="status"></div>
     </div>
 

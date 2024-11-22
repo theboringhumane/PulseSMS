@@ -103,14 +103,12 @@ class AuthService:
 
                 if current_image and current_image != previous_image:
                     if self.qr_callback:
-                        await self.qr_callback(current_image)
-                    previous_image = current_image
-                    logger.info(
-                        "File: auth.py ✅ Line: 134, Function: attach_qr_code_listener; QR code listener attached successfully")
-                    # Return once we get and process the QR code
-                    return True
+                        return await self.qr_callback(current_image)
+                    else:
+                        logger.info("File: auth.py 🎧 Line: 124, Function: attach_qr_code_listener; QR code callback not set")
+                        return current_image
                 # Sleep for a short interval before checking again
-                await asyncio.sleep(0.5)  # Use asyncio.sleep for async sleep
+                await asyncio.sleep(0.2)  # Use asyncio.sleep for async sleep
 
         except Exception as e:
             logger.error(
@@ -135,7 +133,7 @@ class AuthService:
             async def post_qr_code_callback() -> bool:
                 logger.info("Function: start_auth_process; Waiting for authentication...")
                 # Wait for authentication
-                WebDriverWait(self.driver, 180).until(  # 3 minutes timeout
+                WebDriverWait(self.driver, 200).until(  # 3 minutes timeout
                     lambda driver: "/conversations" in driver.current_url
                 )
 
@@ -164,8 +162,6 @@ class AuthService:
             }
 
             with open(self.credentials_path, 'w') as f:
-                json.dump(credentials, f)
-            with open("static/credentials.json", 'w') as f:
                 json.dump(credentials, f)
 
             logger.info("Function: save_credentials; Credentials saved successfully ✅")

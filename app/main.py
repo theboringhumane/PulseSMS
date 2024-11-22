@@ -46,6 +46,7 @@ async def websocket_auth_endpoint(websocket: WebSocket):
             "type": "qr-code",
             "data": base64_image
         })
+        return True
 
     try:
         await websocket.send_json({
