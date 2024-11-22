@@ -39,10 +39,13 @@ class MessageService:
             contact_input.send_keys(to)
 
             # Wait for loader to disappear and click contact selector
-            loader = WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 10).until(
                 EC.invisibility_of_element_located((By.ID, "loader"))
             )
             logger.info("File: message.py 📱 Line: 45, Function: send_message; Loader disappeared")
+
+            # print current url
+            logger.info(f"File: message.py 📱 Line: 48, Function: send_message; Current URL={self.driver.current_url}")
 
             selector_btn = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, XPathSelectors.CONTACT_SELECTOR_BTN))
@@ -55,11 +58,12 @@ class MessageService:
             )
             textarea.send_keys(message)
 
-            # // press enter to send message\
-            textarea.send_keys(u'\ue007') \
- \
-                # wait for message to be sent
+            # press enter to send message
+            textarea.send_keys(u'\ue007')
+
+            # wait for message to be sent
             await asyncio.sleep(0.1)
+
             # get all mws-message-wrapper elements and last one is the message sent
             status_element = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_all_elements_located((By.XPATH, XPathSelectors.STATUS_MESSAGE))

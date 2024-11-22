@@ -18,11 +18,10 @@ class BrowserService:
         logger.info("File: browser.py 🦊 Line: 20, Function: setup_driver; Setting up Firefox driver")
         firefox_options = Options()
 
-        # if settings.headless:
-        #     firefox_options.add_argument("--headless")
-        
-        firefox_options.add_argument("--disable-gpu")
-        firefox_options.add_argument("--disable-dev-shm-usage")
+        if settings.headless:
+            firefox_options.add_argument("--headless")
+            firefox_options.add_argument("--disable-gpu")
+            firefox_options.add_argument("--disable-dev-shm-usage")
 
         self.driver = webdriver.Remote(
             command_executor=f"http://{settings.selenium_host}:{settings.selenium_port}/wd/hub",
