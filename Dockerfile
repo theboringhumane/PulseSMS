@@ -18,7 +18,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
-COPY credentials.json ${APP_HOME}/
+# COPY credentials.json ${APP_HOME}/
 COPY app/ ${APP_HOME}/app/
 COPY static/ ${APP_HOME}/static/
 COPY worker/ ${APP_HOME}/worker/
