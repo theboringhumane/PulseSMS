@@ -1,59 +1,67 @@
-version: "3"
+x-common-config: &common-config
+  build: 
+    context: .
+    dockerfile: Dockerfile
+  volumes: &common-volumes  # 👈 Define common volumes
+    - .:/app
+  environment: &common-env  # 👈 Define common environment variables
+    - SELENIUM_HOST=selenium
+    - SELENIUM_PORT=4444
+    - HEADLESS=true
+    - DEBUG=false
+    - CELERY_BROKER_URL=redis://redis:6999/0
+    - CELERY_RESULT_BACKEND=redis://redis:6999/0
+
 services:
   selenium:
     image: selenium/standalone-firefox:latest
     ports:
       - "4444:4444"
     environment:
-      - SE_NODE_MAX_SESSIONS=10
+      - SE_NODE_MAX_SESSIONS=100
       - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=100
 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4444"]
 
   api:
-    build: .
+    <<: *common-config  # 👈 Use common configuration
     ports:
-      - "8000:8000"
-    environment:
-      - SELENIUM_HOST=selenium
-      - SELENIUM_PORT=4444
-      - HEADLESS=true
-      - DEBUG=false
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - "8001:8000"
+    command: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
     depends_on:
       - selenium
-
     healthcheck:
       test: ["CMD", "curl", "-f", "http://selenium:4444"]
       interval: 30s
-  worker:
-    build: ./app
-    command: sh -c "celery -A worker.celery_app worker --loglevel=info --concurrency=10"
-    volumes:
-      - ./app:/usr/src/app
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - api
-      - redis
+
   redis:
     image: redis:latest
     ports:
-      - "6379:6379"
-  dashboard:
-    build: ./app
-    command: celery --broker=redis://redis:6379/0 flower --port=5555
-    ports:
-      - "5556:5555"
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - "6999:6379"
+    volumes:
+      - redis-data:/data
+
+  celery_worker:
+    <<: *common-config  # 👈 Use common configuration
+    command: celery -A worker.worker.celery_app worker --loglevel=info --concurrency=30
     depends_on:
       - api
       - redis
-      - worker
+      - selenium
+
+  flower:
+    << : *common-config  # 👈 Use common configuration
+    command: celery -A worker.worker.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - api
+      - redis
+      - celery_worker
 networks:
     default:
+
+volumes:
+    redis-data:

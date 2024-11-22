@@ -1,13 +1,24 @@
-FROM python:3.11-slim
+FROM python:3.11-slim-buster
 
-WORKDIR /code
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    APP_HOME=/app
 
+# Set working directory
+WORKDIR ${APP_HOME}
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python packages
 COPY requirements.txt .
-COPY credentials.json .
-COPY static static
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./app /code/app
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Copy project files
+COPY credentials.json ${APP_HOME}/
+COPY app/ ${APP_HOME}/app/
+COPY static/ ${APP_HOME}/static/
+COPY worker/ ${APP_HOME}/worker/
