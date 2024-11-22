@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  base:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - SELENIUM_HOST=selenium
+      - SELENIUM_PORT=4444
+      - HEADLESS=true
+      - DEBUG=false
+      - CELERY_BROKER_URL=redis://redis:6999/0
+      - CELERY_RESULT_BACKEND=redis://redis:6999/0
+

@@ -1,19 +1,5 @@
 version: '3.8'
 
-x-common-config: &common-config
-  build: 
-    context: .
-    dockerfile: Dockerfile
-  volumes: &common-volumes  # 👈 Define common volumes
-    - .:/app
-  environment: &common-env  # 👈 Define common environment variables
-    - SELENIUM_HOST=selenium
-    - SELENIUM_PORT=4444
-    - HEADLESS=true
-    - DEBUG=false
-    - CELERY_BROKER_URL=redis://redis:6999/0
-    - CELERY_RESULT_BACKEND=redis://redis:6999/0
-
 services:
   selenium:
     image: selenium/standalone-firefox:latest
@@ -28,7 +14,9 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:4444"]
 
   api:
-    <<: *common-config  # 👈 Use common configuration
+    extends:
+      file: base.yml
+      service: base
     ports:
       - "8001:8000"
     command: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
@@ -46,7 +34,9 @@ services:
       - redis-data:/data
 
   celery_worker:
-    <<: *common-config  # 👈 Use common configuration
+    extends:
+      file: base.yml
+      service: base
     command: celery -A worker.worker.celery_app worker --loglevel=info --concurrency=30
     depends_on:
       - api
@@ -54,7 +44,9 @@ services:
       - selenium
 
   flower:
-    << : *common-config  # 👈 Use common configuration
+    extends:
+      file: base.yml
+      service: base
     command: celery -A worker.worker.celery_app flower --port=5555
     ports:
       - "5555:5555"
