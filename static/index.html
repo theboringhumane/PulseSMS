@@ -31,7 +31,7 @@
     </div>
 
     <script>
-        const ws = new WebSocket(`ws://localhost:8000/ws/auth`);
+        const ws = new WebSocket(`ws://${window.location.hostname}/ws/auth`);
         const qrCode = document.getElementById('qr-code');
         const status = document.getElementById('status');
 
