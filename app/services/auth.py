@@ -133,6 +133,7 @@ class AuthService:
             await self.check_remember_me()
 
             async def post_qr_code_callback() -> bool:
+                logger.info("Function: start_auth_process; Waiting for authentication...")
                 # Wait for authentication
                 WebDriverWait(self.driver, 180).until(  # 3 minutes timeout
                     lambda driver: "/conversations" in driver.current_url

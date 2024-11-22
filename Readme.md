@@ -29,7 +29,7 @@ The application is built using:
 - [✅] Celery integration
 - [✅] Docker containerization
 - [✅] Flower dashboard
-- [ ] Sending concurrent messages
+- [✅] Sending concurrent messages (with Celery)
 
 ## 🚀 Getting Started
 
@@ -59,6 +59,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+4. Copy the `.env.example` file to `.env` and update the values:
+```bash
+cp .env.example .env
+```
 
 ### 🐳 Docker Deployment
 

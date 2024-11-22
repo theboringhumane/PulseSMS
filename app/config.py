@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
 
 # Configure logging
@@ -18,14 +18,18 @@ class URLEnum(str, Enum):
 
 
 class Settings(BaseSettings):
-    selenium_host: str = "localhost"
-    selenium_port: int = 4444
+    model_config = SettingsConfigDict(
+        extra='ignore', 
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
+    selenium_host: str
+    selenium_port: int
+    celery_broker: str
+    celery_result_backend: str
     debug: bool = False
-    headless: bool = True
+    headless: bool = False
     urls: dict = {k: v for k, v in URLEnum.__members__.items()}
-
-    class Config:
-        env_file = ".env"
-
-
+    
+    
 settings = Settings()

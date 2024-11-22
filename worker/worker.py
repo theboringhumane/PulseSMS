@@ -1,13 +1,12 @@
 import asyncio
 
 from celery import Celery
+
+from app.config import settings
 from app.services.message import MessageService
 
 # Initialize Celery instance
-celery_app = Celery('g-messages', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
-
-# Load tasks from tasks module
-celery_app.autodiscover_tasks(['app.tasks'])
+celery_app = Celery('g-messages', broker=settings.celery_broker, backend=settings.celery_result_backend)
 
 
 # Set default configuration
@@ -19,8 +18,8 @@ celery_app.autodiscover_tasks(['app.tasks'])
     max_retries=3,
 )
 def send_message(self, to: str, message: str):
+    message_service = MessageService()
     try:
-        message_service = MessageService()
         asyncio.run(message_service.setup())
         # Send message
         asyncio.run(message_service.send_message(to, message))

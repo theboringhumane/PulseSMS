@@ -1,3 +1,5 @@
 cred-qr
 venv
 .idea
+.env.local
+.env
