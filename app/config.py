@@ -19,7 +19,7 @@ class URLEnum(str, Enum):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        extra='ignore', 
+        extra='ignore',
         env_file=".env",
         env_file_encoding="utf-8"
     )
@@ -30,6 +30,6 @@ class Settings(BaseSettings):
     debug: bool = False
     headless: bool = False
     urls: dict = {k: v for k, v in URLEnum.__members__.items()}
-    
-    
+
+
 settings = Settings()

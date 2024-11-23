@@ -21,11 +21,13 @@ class BrowserService:
         if settings.headless:
             firefox_options.add_argument("--headless")
 
+        firefox_options.set_preference("profile.managed_default_content_settings.images", 2)
+        firefox_options.set_preference("profile.managed_default_content_settings.stylesheets", 2)
+
         self.driver = webdriver.Remote(
             command_executor=f"http://{settings.selenium_host}:{settings.selenium_port}/wd/hub",
-            options=firefox_options
+            options=firefox_options,
         )
-        self.driver.implicitly_wait(10)
 
         self.auth_service = AuthService(self.driver, self.credentials_path)
         logger.info("File: browser.py 🦊 Line: 31, Function: setup_driver; Firefox driver setup complete ✅")
