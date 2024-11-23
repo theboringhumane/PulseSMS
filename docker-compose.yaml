@@ -20,7 +20,7 @@ services:
         - FILES_CACHE_BUST=${FILES_CACHE_BUST:-$(date +%s)}
       context: .
       dockerfile: Dockerfile
-    command: ["bash", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 & celery -A worker.worker.celery_app worker --loglevel=info --concurrency=30 & celery -A worker.worker.celery_app flower --port=5555"]
+    command: ["bash", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 & celery -A worker.worker.celery_app worker --loglevel=info --concurrency=30"]
     volumes:
       - .:/app
     environment:
@@ -32,7 +32,6 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     ports:
       - "8001:8000"
-      - "5555:5555"
     depends_on:
       - selenium
     healthcheck:
@@ -46,8 +45,16 @@ services:
 
     volumes:
       - redis-data:/data
+  flower:
+    image: mher/flower
+    command: ["celery", "--broker=redis://redis:6379/0", "flower"]
+    ports:
+      - "5556:5555"
+    depends_on:
+      - redis
+      - api
 networks:
-    default:
+  default:
 
 volumes:
     redis-data:
