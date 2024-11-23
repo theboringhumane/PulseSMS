@@ -30,6 +30,5 @@ COPY ./credentials.json ${APP_HOME}/
 COPY ./app/ ${APP_HOME}/app/
 COPY ./static/ ${APP_HOME}/static/
 COPY ./worker/ ${APP_HOME}/worker/
-COPY ./run.sh ${APP_HOME}/
 
-ENTRYPOINT [ "sh", "run.sh" ]
+RUN echo "🚀 Starting the application... 🌟"

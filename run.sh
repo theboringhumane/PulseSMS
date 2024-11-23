@@ -1,1 +1,0 @@
-uvicorn app.main:app --host 0.0.0.0 --port 8000 & celery -A worker.worker.celery_app worker --loglevel=info --concurrency=30 & sleep 10 && celery -A worker.worker.celery_app flower --port=5555
