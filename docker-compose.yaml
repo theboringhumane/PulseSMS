@@ -15,6 +15,9 @@ services:
 
   api:
     build: 
+      args:
+        - CACHE_BUST=${CACHE_BUST:-$(date +%s)}
+        - FILES_CACHE_BUST=${FILES_CACHE_BUST:-$(date +%s)}
       context: .
       dockerfile: Dockerfile
     volumes:
@@ -28,7 +31,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     ports:
       - "8001:8000"
-    command: "uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      - "5555:5555"
     depends_on:
       - selenium
     healthcheck:
@@ -39,48 +42,9 @@ services:
     image: redis:latest
     ports:
       - "6999:6379"
+
     volumes:
       - redis-data:/data
-
-  celery_worker:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app
-    environment:
-      - SELENIUM_HOST=selenium
-      - SELENIUM_PORT=4444
-      - HEADLESS=true
-      - DEBUG=false
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    command: celery -A worker.worker.celery_app worker --loglevel=info --concurrency=30
-    depends_on:
-      - api
-      - redis
-      - selenium
-
-  flower:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app
-    environment:
-      - SELENIUM_HOST=selenium
-      - SELENIUM_PORT=4444
-      - HEADLESS=true
-      - DEBUG=false
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    command: celery -A worker.worker.celery_app flower --port=5555
-    ports:
-      - "5555:5555"
-    depends_on:
-      - api
-      - redis
-      - celery_worker
 networks:
     default:
 
